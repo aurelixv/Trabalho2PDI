@@ -1,7 +1,7 @@
 # Trabalho2PDI
 Trabalho 2 de PDI, Prazo 05/04 17:00, Peso 1.0
 
-●Prazo: 05/04, 17:00.
+●Prazo: 05/04, 17:00.<br>
 ●Peso: 1.0 (de 10).
 ●Objetivo: implemente 3 algoritmos para o filtro da média:
 ●Algoritmo “ingênuo”.
