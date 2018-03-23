@@ -100,6 +100,7 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
     int bordery = a/2;
     int borderx = l/2;
     float soma = 0.0f;
+    //TODO: ALOCAR NOVA IMAGEM ANTES DA IGUALDADE
     Imagem *buffer = in;
     
     /** Filtro horizontal **/
@@ -107,6 +108,7 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
         for(y = 0; y < in->altura; y++) {
             for(x = borderx; x < in->largura - borderx; x++) {
                 for(i = x - borderx; i <= x + borderx; i++) {
+                    //TODO: MUDAR OPERACAO
                     soma += buffer->dados[canal][y][i];
                 }
                 buffer->dados[canal][y][x] = soma/l;
@@ -120,6 +122,7 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
         for(x = 0; x < in->largura; x++) {
             for(y = bordery; y < in->altura - bordery; y++) {
                 for(i = y - bordery; i <= y + bordery; i++) {
+                    //TODO: MUDAR OPERACAO
                     soma += buffer->dados[canal][i][x];
                 }
                 buffer->dados[canal][y][x] = soma/a;
@@ -130,6 +133,5 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
     
     *out = *buffer;
 
-    printf("Sucesso!\n");
-
+    printf("[\x1b[32m OK \x1b[0m]\n");
 }
