@@ -1,0 +1,47 @@
+# depslib dependency file v1.0
+1521726152 source:/home/lincoln/Documents/Trabalho2PDI/arquivos/base.c
+	"base.h"
+
+1521726152 /home/lincoln/Documents/Trabalho2PDI/arquivos/base.h
+
+1521726152 source:/home/lincoln/Documents/Trabalho2PDI/arquivos/cores.c
+	<stdio.h>
+	<stdlib.h>
+	"cores.h"
+
+1521726152 /home/lincoln/Documents/Trabalho2PDI/arquivos/cores.h
+	"imagem.h"
+
+1521726152 /home/lincoln/Documents/Trabalho2PDI/arquivos/imagem.h
+
+1521726152 source:/home/lincoln/Documents/Trabalho2PDI/arquivos/desenho.c
+	"desenho.h"
+	<stdio.h>
+
+1521726152 /home/lincoln/Documents/Trabalho2PDI/arquivos/desenho.h
+	"base.h"
+	"geometria.h"
+	"cores.h"
+	"imagem.h"
+
+1521726152 /home/lincoln/Documents/Trabalho2PDI/arquivos/geometria.h
+
+1521726152 source:/home/lincoln/Documents/Trabalho2PDI/arquivos/geometria.c
+	"geometria.h"
+
+1521726152 source:/home/lincoln/Documents/Trabalho2PDI/arquivos/imagem.c
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+	"imagem.h"
+
+1521726152 source:/home/lincoln/Documents/Trabalho2PDI/arquivos/segmenta.c
+	"base.h"
+	"segmenta.h"
+	<stdio.h>
+	<stdlib.h>
+
+1521726152 /home/lincoln/Documents/Trabalho2PDI/arquivos/segmenta.h
+	"imagem.h"
+	"geometria.h"
+

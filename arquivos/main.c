@@ -5,10 +5,12 @@
 
 #define IMAGEM "Exemplos/a01 - Original.bmp"
 #define BORRADA "ingenuo.bmp"
+#define SEPARAVEL "separavel.bmp"
 #define JALTURA 13
 #define JARGURA 3
 
 void ingenuo(Imagem *in, Imagem *out, int a, int l);
+void separavel(Imagem *in, Imagem *out, int a, int l);
 
 int main() {
     
@@ -35,14 +37,27 @@ int main() {
     //Funções que borram a imagem
     //TODO: Algoritmo ingênuo
     ingenuo(imagem, borrada, JALTURA, JARGURA);
-    
-    //TODO: Filtro separável
-    
-    //TODO: Algoritmo com imagens integrais
-    
+
     printf("Salvando imagem borrada com o nome [ %s ]... ", BORRADA);
     salvaImagem(borrada, "ingenuo.bmp");
     printf("[\x1b[32m OK \x1b[0m]\n");
+
+    printf("Criando imagem auxiliar... ");
+    Imagem *borradaS = criaImagem(imagem->largura, imagem->altura, imagem->n_canais);
+    if(!borradaS) {
+        printf("\n\x1b[31mERRO:\x1b[0m A imagem auxiliar não pode ser criada.\n");
+        exit(1);
+    }
+    borradaS = imagem;
+    
+    //TODO: Filtro separável
+    separavel(imagem, borradaS, JALTURA, JARGURA);
+
+    printf("Salvando imagem borrada com o nome [ %s ]... ", SEPARAVEL);
+    salvaImagem(borradaS, "separavel.bmp");
+    printf("[\x1b[32m OK \x1b[0m]\n");
+
+    //TODO: Algoritmo com imagens integrais
     
     //Libera a memória alocada antes de terminar
     printf("Liberando memória...\n");
@@ -76,4 +91,45 @@ void ingenuo(Imagem *in, Imagem *out, int a, int l) {
     }
     
     printf("[\x1b[32m OK \x1b[0m]\n");
+}
+
+void separavel(Imagem *in, Imagem *out, int a, int l) {
+
+    printf("Iniciando filro separável... ");
+    int y, x, i, canal;
+    int bordery = a/2;
+    int borderx = l/2;
+    float soma = 0.0f;
+    Imagem *buffer = in;
+    
+    /** Filtro horizontal **/
+    for(canal = 0; canal < in->n_canais; canal++) {
+        for(y = 0; y < in->altura; y++) {
+            for(x = borderx; x < in->largura - borderx; x++) {
+                for(i = x - borderx; i <= x + borderx; i++) {
+                    soma += buffer->dados[canal][y][i];
+                }
+                buffer->dados[canal][y][x] = soma/l;
+                soma = 0.0f;
+            }
+        }
+    }
+
+    /** Filtro vertical **/
+    for(canal = 0; canal < in->n_canais; canal++) {
+        for(x = 0; x < in->largura; x++) {
+            for(y = bordery; y < in->altura - bordery; y++) {
+                for(i = y - bordery; i <= y + bordery; i++) {
+                    soma += buffer->dados[canal][i][x];
+                }
+                buffer->dados[canal][y][x] = soma/a;
+                soma = 0.0f;
+            }
+        }
+    }
+    
+    *out = *buffer;
+
+    printf("Sucesso!\n");
+
 }
