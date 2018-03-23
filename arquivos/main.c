@@ -18,18 +18,19 @@ int main() {
     printf("A carregar a imagem [ %s ]... ", IMAGEM);
     imagem = abreImagem(IMAGEM, 3);
     if(!imagem) {
-        printf("\nERRO: A imagem não pode ser aberta.\n");
+        printf("\n\x1b[31mERRO:\x1b[0m A imagem não pode ser aberta.\n");
         exit(1);
     }
-    printf("Sucesso!\n");
+    printf("[\x1b[32m OK \x1b[0m]\n");
     
     printf("Criando imagem auxiliar... ");
     Imagem *borrada = criaImagem(imagem->largura, imagem->altura, imagem->n_canais);
     if(!borrada) {
-        printf("\nERRO: A imagem auxiliar não pode ser criada.\n");
+        printf("\n\x1b[31mERRO:\x1b[0m A imagem auxiliar não pode ser criada.\n");
         exit(1);
     }
-    printf("Sucesso!\n");
+    borrada = imagem;
+    printf("[\x1b[32m OK \x1b[0m]\n");
     
     //Funções que borram a imagem
     //TODO: Algoritmo ingênuo
@@ -41,7 +42,7 @@ int main() {
     
     printf("Salvando imagem borrada com o nome [ %s ]... ", BORRADA);
     salvaImagem(borrada, "ingenuo.bmp");
-    printf("Sucesso!\n");
+    printf("[\x1b[32m OK \x1b[0m]\n");
     
     //Libera a memória alocada antes de terminar
     printf("Liberando memória...\n");
@@ -74,5 +75,5 @@ void ingenuo(Imagem *in, Imagem *out, int a, int l) {
         }
     }
     
-    printf("Sucesso!\n");
+    printf("[\x1b[32m OK \x1b[0m]\n");
 }
