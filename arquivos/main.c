@@ -124,6 +124,7 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
             }
         }
     }
-
+    
+    destroiImagem(buffer);
     printf("[\x1b[32m OK \x1b[0m]\n");
 }
