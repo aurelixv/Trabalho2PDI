@@ -3,14 +3,16 @@
 #include <time.h>
 #include "pdi.h"
 
-#define IMAGEM "Exemplos/a01 - Original.bmp"
-#define INGENUO "ingenuo.bmp"
-#define SEPARAVEL "separavel.bmp"
-#define JARGURA 21
-#define JALTURA 21
+#define IMAGEM      "Exemplos/a01 - Original.bmp"
+#define INGENUO     "ingenuo.bmp"
+#define SEPARAVEL   "separavel.bmp"
+#define INTEGRAL    "integral.bmp"
+#define JARGURA     21
+#define JALTURA     21
 
 void ingenuo(Imagem *in, Imagem *out, int a, int l);
 void separavel(Imagem *in, Imagem *out, int a, int l);
+void integral(Imagem *in, Imagem *out, int a, int l);
 
 int main() {
     
@@ -23,7 +25,7 @@ int main() {
         printf("\n\x1b[31mERRO:\x1b[0m A imagem não pode ser aberta.\n");
         exit(1);
     }
-    printf("[\x1b[32m OK \x1b[0m]\n");
+    printf("\t[\x1b[32m OK \x1b[0m]\n");
     
     //Aloca memória para a imagem de saída
     printf("Criando imagem auxiliar... ");
@@ -33,7 +35,7 @@ int main() {
         exit(1);
     }
     copiaConteudo(imagem, borrada);
-    printf("[\x1b[32m OK \x1b[0m]\n");
+    printf("\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
     
     //Funções que borram a imagem
     //TODO: Algoritmo ingênuo
@@ -41,7 +43,7 @@ int main() {
 
     printf("Salvando imagem borrada com o nome [ %s ]... ", INGENUO);
     salvaImagem(borrada, INGENUO);
-    printf("[\x1b[32m OK \x1b[0m]\n");
+    printf("\t[\x1b[32m OK \x1b[0m]\n");
     
     //Reescreve imagem de saída para o próximo algoritmo
     copiaConteudo(imagem, borrada);
@@ -52,8 +54,16 @@ int main() {
     printf("Salvando imagem borrada com o nome [ %s ]... ", SEPARAVEL);
     salvaImagem(borrada, SEPARAVEL);
     printf("[\x1b[32m OK \x1b[0m]\n");
-
+    
+    //Reescreve imagem de saída para o próximo algoritmo
+    copiaConteudo(imagem, borrada);
+    
     //TODO: Algoritmo com imagens integrais
+    integral(imagem, borrada, JALTURA, JARGURA);
+    
+    printf("Salvando imagem borrada com o nome [ %s ]... ", INTEGRAL);
+    salvaImagem(borrada, INTEGRAL);
+    printf("\t[\x1b[32m OK \x1b[0m]\n");
     
     //Libera a memória alocada antes de terminar
     printf("Liberando memória...\n");
@@ -87,7 +97,7 @@ void ingenuo(Imagem *in, Imagem *out, int a, int l) {
         }
     }
     
-    printf("[\x1b[32m OK \x1b[0m]\n");
+    printf("\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
 
 void separavel(Imagem *in, Imagem *out, int a, int l) {
@@ -126,5 +136,40 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
     }
     
     destroiImagem(buffer);
-    printf("[\x1b[32m OK \x1b[0m]\n");
+    printf("\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
+
+void integral(Imagem *in, Imagem *out, int a, int l) {
+    
+    printf("Iniciando filtro integral... ");
+    int y, x, j, i, canal;
+    int bordery = a/2;
+    int borderx = l/2;
+    float soma = 0.0f;
+    Imagem *buffer = criaImagem(in->largura, in->altura, in->n_canais);
+    
+    for(canal = 0; canal < in->n_canais; canal += 1) {
+        
+        for(y = 0; y < in->altura; y += 1) {            
+            buffer->dados[canal][y][0] = in->dados[canal][y][0];
+            for(x = 1; x < in->largura; x += 1) {
+                buffer->dados[canal][y][x] = in->dados[canal][y][x] + buffer->dados[canal][y][x - 1];
+            }
+        }
+        
+        for(y = 1; y < in->altura; y += 1) {
+            for(x = 0; x < in->largura; x += 1) {
+                buffer->dados[canal][y][x] = buffer->dados[canal][y][x] + buffer->dados[canal][y - 1][x];
+            }
+        }
+    }
+    
+    destroiImagem(buffer);
+    printf("\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
+}
+
+
+
+
+
+
