@@ -4,17 +4,17 @@
 #include "pdi.h"
 
 #define IMAGEM "Exemplos/a01 - Original.bmp"
-#define BORRADA "ingenuo.bmp"
+#define INGENUO "ingenuo.bmp"
 #define SEPARAVEL "separavel.bmp"
-#define JALTURA 13
-#define JARGURA 3
+#define JARGURA 21
+#define JALTURA 21
 
 void ingenuo(Imagem *in, Imagem *out, int a, int l);
 void separavel(Imagem *in, Imagem *out, int a, int l);
 
 int main() {
     
-    Imagem *imagem;
+    Imagem *imagem, *borrada;
     
     //Abre a imagem a ser borrada
     printf("A carregar a imagem [ %s ]... ", IMAGEM);
@@ -25,36 +25,32 @@ int main() {
     }
     printf("[\x1b[32m OK \x1b[0m]\n");
     
+    //Aloca memória para a imagem de saída
     printf("Criando imagem auxiliar... ");
-    Imagem *borrada = criaImagem(imagem->largura, imagem->altura, imagem->n_canais);
+    borrada = criaImagem(imagem->largura, imagem->altura, imagem->n_canais);
     if(!borrada) {
         printf("\n\x1b[31mERRO:\x1b[0m A imagem auxiliar não pode ser criada.\n");
         exit(1);
     }
-    borrada = imagem;
+    copiaConteudo(imagem, borrada);
     printf("[\x1b[32m OK \x1b[0m]\n");
     
     //Funções que borram a imagem
     //TODO: Algoritmo ingênuo
     ingenuo(imagem, borrada, JALTURA, JARGURA);
 
-    printf("Salvando imagem borrada com o nome [ %s ]... ", BORRADA);
-    salvaImagem(borrada, "ingenuo.bmp");
+    printf("Salvando imagem borrada com o nome [ %s ]... ", INGENUO);
+    salvaImagem(borrada, INGENUO);
     printf("[\x1b[32m OK \x1b[0m]\n");
-
-    printf("Criando imagem auxiliar... ");
-    Imagem *borradaS = criaImagem(imagem->largura, imagem->altura, imagem->n_canais);
-    if(!borradaS) {
-        printf("\n\x1b[31mERRO:\x1b[0m A imagem auxiliar não pode ser criada.\n");
-        exit(1);
-    }
-    borradaS = imagem;
+    
+    //Reescreve imagem de saída para o próximo algoritmo
+    copiaConteudo(imagem, borrada);
     
     //TODO: Filtro separável
-    separavel(imagem, borradaS, JALTURA, JARGURA);
+    separavel(imagem, borrada, JALTURA, JARGURA);
 
     printf("Salvando imagem borrada com o nome [ %s ]... ", SEPARAVEL);
-    salvaImagem(borradaS, "separavel.bmp");
+    salvaImagem(borrada, SEPARAVEL);
     printf("[\x1b[32m OK \x1b[0m]\n");
 
     //TODO: Algoritmo com imagens integrais
@@ -62,6 +58,7 @@ int main() {
     //Libera a memória alocada antes de terminar
     printf("Liberando memória...\n");
     destroiImagem(imagem);
+    destroiImagem(borrada);    
     
     printf("Encerrando...\n");
     
