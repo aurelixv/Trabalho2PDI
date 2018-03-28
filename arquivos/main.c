@@ -13,6 +13,7 @@
 void ingenuo(Imagem *in, Imagem *out, int a, int l);
 void separavel(Imagem *in, Imagem *out, int a, int l);
 void integral(Imagem *in, Imagem *out, int a, int l);
+void fazBorda(Imagem *in, int a, int l);
 
 int main() {
     
@@ -51,6 +52,8 @@ int main() {
     //TODO: Filtro separável
     separavel(imagem, borrada, JALTURA, JARGURA);
 
+    //Faz a borda
+    fazBorda(borrada, JALTURA, JARGURA);
     printf("Salvando imagem borrada com o nome [ %s ]... ", SEPARAVEL);
     salvaImagem(borrada, SEPARAVEL);
     printf("\t[\x1b[32m OK \x1b[0m]\n");
@@ -73,6 +76,20 @@ int main() {
     printf("Encerrando...\n");
     
     return 0;
+}
+
+void fazBorda(Imagem *in, int a, int l) {
+
+    int x, y, canal;
+
+    for(canal = 0; canal < in->n_canais; canal += 1) {
+        for(y = 0; y < in->altura; y += 1) {
+            for(x = 0; x < in->largura; x += 1) {
+                if((y < a/2) || (x < l/2) || (x > in->largura - l/2 - 1) || (y > in->altura - a/2 - 1))
+                    in->dados[canal][y][x] = 0.0f;
+            }
+        }
+    }
 }
 
 void ingenuo(Imagem *in, Imagem *out, int a, int l) {
@@ -132,16 +149,6 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
                 }
                 out->dados[canal][y][x] = soma/a;
                 soma = 0.0f;
-            }
-        }
-    }
-
-    //Faz a borda
-    for(canal = 0; canal < out->n_canais; canal += 1) {
-        for(y = 0; y < out->altura; y += 1) {
-            for(x = 0; x < out->largura; x += 1) {
-                if((y < bordery) || (x < borderx) || (x > out->largura - borderx) || (y > out->altura - bordery - 1))
-                    out->dados[canal][y][x] = 0.0f;
             }
         }
     }
