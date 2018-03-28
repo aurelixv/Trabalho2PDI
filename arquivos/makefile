@@ -8,4 +8,3 @@ run:
 
 debug:
 	gcc -g main.c base.c cores.c desenho.c geometria.c imagem.c segmenta.c -lm -Wall
-	gdb a.out
