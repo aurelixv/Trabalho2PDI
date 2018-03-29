@@ -7,7 +7,7 @@
 #define INGENUO     "ingenuo.bmp"
 #define SEPARAVEL   "separavel.bmp"
 #define INTEGRAL    "integral.bmp"
-#define JARGURA     11
+#define JARGURA     15
 #define JALTURA     15
 
 void ingenuo(Imagem *in, Imagem *out, int a, int l);
@@ -42,6 +42,10 @@ int main() {
     //TODO: Algoritmo ingênuo
     ingenuo(imagem, borrada, JALTURA, JARGURA);
 
+    //Faz a borda
+    fazBorda(borrada, JALTURA, JARGURA);    
+
+    //Grava o resultado
     printf("Salvando imagem borrada com o nome [ %s ]... ", INGENUO);
     salvaImagem(borrada, INGENUO);
     printf("\t\t[\x1b[32m OK \x1b[0m]\n");
@@ -54,6 +58,8 @@ int main() {
 
     //Faz a borda
     fazBorda(borrada, JALTURA, JARGURA);
+
+    //Grava o resultado
     printf("Salvando imagem borrada com o nome [ %s ]... ", SEPARAVEL);
     salvaImagem(borrada, SEPARAVEL);
     printf("\t[\x1b[32m OK \x1b[0m]\n");
@@ -62,8 +68,17 @@ int main() {
     copiaConteudo(imagem, borrada);
     
     //TODO: Algoritmo com imagens integrais
-    integral(imagem, borrada, JALTURA, JARGURA);
-    
+    int j = 3, i = 3;
+    do {    
+        integral(imagem, borrada, j, i);
+        if(j < JALTURA)
+            j += 2;
+        if(i < JARGURA)
+            i += 2;
+    } while(j < JALTURA || i < JARGURA);
+
+    fazBorda(borrada, 3, 3);
+
     printf("Salvando imagem borrada com o nome [ %s ]... ", INTEGRAL);
     salvaImagem(borrada, INTEGRAL);
     printf("\t\t[\x1b[32m OK \x1b[0m]\n");
