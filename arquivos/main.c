@@ -7,7 +7,7 @@
 #define INGENUO     "ingenuo.bmp"
 #define SEPARAVEL   "separavel.bmp"
 #define INTEGRAL    "integral.bmp"
-#define JARGURA     15
+#define JARGURA     11
 #define JALTURA     15
 
 void ingenuo(Imagem *in, Imagem *out, int a, int l);
@@ -68,6 +68,9 @@ int main() {
     copiaConteudo(imagem, borrada);
     
     //TODO: Algoritmo com imagens integrais
+    integral(imagem, borrada, JALTURA, JARGURA);
+
+    /*
     int j = 3, i = 3;
     do {    
         integral(imagem, borrada, j, i);
@@ -78,6 +81,7 @@ int main() {
     } while(j < JALTURA || i < JARGURA);
 
     fazBorda(borrada, 3, 3);
+    */
 
     printf("Salvando imagem borrada com o nome [ %s ]... ", INTEGRAL);
     salvaImagem(borrada, INTEGRAL);
@@ -173,6 +177,82 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
 }
 
 void integral(Imagem *in, Imagem *out, int a, int l) {
+    
+    printf("Iniciando filtro integral... ");
+    int y, x, canal;
+    int bordery = a/2;
+    int borderx = l/2;    
+    Imagem *buffer = criaImagem(in->largura, in->altura, in->n_canais);
+    
+    for(canal = 0; canal < in->n_canais; canal += 1) {
+        
+        for(y = 0; y < in->altura; y += 1) {            
+            buffer->dados[canal][y][0] = in->dados[canal][y][0];
+            for(x = 1; x < in->largura; x += 1) {
+                buffer->dados[canal][y][x] = in->dados[canal][y][x] + buffer->dados[canal][y][x - 1];
+            }
+        }
+        
+        for(y = 1; y < in->altura; y += 1) {
+            for(x = 0; x < in->largura; x += 1) {
+                buffer->dados[canal][y][x] = buffer->dados[canal][y][x] + buffer->dados[canal][y - 1][x];
+            }
+        }
+    }
+
+    //Borrar a imagem
+    int j, i, area, aux;
+    float soma;
+
+    for(canal = 0; canal < in->n_canais; canal += 1) {
+        for(y = 0; y < in->altura; y += 1) {
+            for(x = 0; x < in->largura; x += 1) {
+                
+                area = 0;
+                soma = 0.0f;
+
+                for(j = y - bordery; j <= y + bordery; j += 1) {
+                    if(j > -1 && j < in->altura) {
+                        for(i = x - borderx; i <= x + borderx; i += 1) {
+                            if(i > -1 && i < in->largura) {
+                                area += 1;
+                                if(buffer->dados[canal][j][i] > soma)
+                                    soma = buffer->dados[canal][j][i];
+                            }                               
+                        }
+                    }
+                }                                
+
+                if(y > bordery) {
+                    aux = x + borderx;
+                    while(aux >= in->largura)
+                        aux -= 1;
+
+                    soma -= buffer->dados[canal][y - bordery - 1][aux];
+                }
+
+                if(x > borderx) {
+                    aux = y + bordery;
+                    while(aux >= in->altura)
+                        aux -= 1;
+                
+                    soma -= buffer->dados[canal][aux][x - borderx - 1];                                    
+                }
+
+                if(y > bordery && x > borderx)
+                    soma += buffer->dados[canal][y - bordery - 1][x - borderx - 1];
+                
+
+                out->dados[canal][y][x] = soma / area;
+            }
+        }
+    }
+
+    destroiImagem(buffer);
+    printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
+}
+
+void integralOld(Imagem *in, Imagem *out, int a, int l) {
     
     printf("Iniciando filtro integral... ");
     int y, x, canal;
