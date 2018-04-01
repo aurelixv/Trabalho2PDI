@@ -16,9 +16,9 @@ void integral(Imagem *in, Imagem *out, int a, int l);
 void fazBorda(Imagem *in, int a, int l);
 
 int main() {
-    
+
     Imagem *imagem, *borrada;
-    
+
     //Abre a imagem a ser borrada
     printf("A carregar a imagem [ %s ]... ", IMAGEM);
     imagem = abreImagem(IMAGEM, 3);
@@ -27,7 +27,7 @@ int main() {
         exit(1);
     }
     printf("\t\t[\x1b[32m OK \x1b[0m]\n");
-    
+
     //Aloca memória para a imagem de saída
     printf("Criando imagem auxiliar... ");
     borrada = criaImagem(imagem->largura, imagem->altura, imagem->n_canais);
@@ -37,22 +37,22 @@ int main() {
     }
     copiaConteudo(imagem, borrada);
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
-    
+
     //Funções que borram a imagem
     //TODO: Algoritmo ingênuo
     ingenuo(imagem, borrada, JALTURA, JARGURA);
 
     //Faz a borda
-    fazBorda(borrada, JALTURA, JARGURA);    
+    fazBorda(borrada, JALTURA, JARGURA);
 
     //Grava o resultado
     printf("Salvando imagem borrada com o nome [ %s ]... ", INGENUO);
     salvaImagem(borrada, INGENUO);
     printf("\t\t[\x1b[32m OK \x1b[0m]\n");
-    
+
     //Reescreve imagem de saída para o próximo algoritmo
     copiaConteudo(imagem, borrada);
-    
+
     //TODO: Filtro separável
     separavel(imagem, borrada, JALTURA, JARGURA);
 
@@ -63,44 +63,33 @@ int main() {
     printf("Salvando imagem borrada com o nome [ %s ]... ", SEPARAVEL);
     salvaImagem(borrada, SEPARAVEL);
     printf("\t[\x1b[32m OK \x1b[0m]\n");
-    
+
     //Reescreve imagem de saída para o próximo algoritmo
     copiaConteudo(imagem, borrada);
-    
+
     //TODO: Algoritmo com imagens integrais
     integral(imagem, borrada, JALTURA, JARGURA);
-
-    /*
-    int j = 3, i = 3;
-    do {    
-        integral(imagem, borrada, j, i);
-        if(j < JALTURA)
-            j += 2;
-        if(i < JARGURA)
-            i += 2;
-    } while(j < JALTURA || i < JARGURA);
-
-    fazBorda(borrada, 3, 3);
-    */
 
     printf("Salvando imagem borrada com o nome [ %s ]... ", INTEGRAL);
     salvaImagem(borrada, INTEGRAL);
     printf("\t\t[\x1b[32m OK \x1b[0m]\n");
-    
+
     //Libera a memória alocada antes de terminar
     printf("Liberando memória...\n");
     destroiImagem(imagem);
-    destroiImagem(borrada);    
-    
+    destroiImagem(borrada);
+
     printf("Encerrando...\n");
-    
+
     return 0;
 }
 
+/** Torna as bordas pretas **/
 void fazBorda(Imagem *in, int a, int l) {
 
     int x, y, canal;
 
+    // Preenche todas as bordas com o valor 0.0f
     for(canal = 0; canal < in->n_canais; canal += 1) {
         for(y = 0; y < in->altura; y += 1) {
             for(x = 0; x < in->largura; x += 1) {
@@ -111,15 +100,18 @@ void fazBorda(Imagem *in, int a, int l) {
     }
 }
 
+/** Filtra a imagem deixando bordas **/
 void ingenuo(Imagem *in, Imagem *out, int a, int l) {
-    
+
     printf("Iniciando algoritmo ingenuo... ");
     int y, x, j, i, canal;
     int bordery = a/2;
     int borderx = l/2;
     int area = a * l;
     float soma = 0.0f;
-    
+
+    // Percorre todos os pixels da janela por toda a imagem e atribui a imagem de saida
+    // o valor da média entre os pixels da janela
     for(canal = 0; canal < in->n_canais; canal += 1) {
         for(y = bordery; y < in->altura - bordery; y += 1) {
             for(x = borderx; x < in->largura - borderx; x += 1) {
@@ -133,10 +125,11 @@ void ingenuo(Imagem *in, Imagem *out, int a, int l) {
             }
         }
     }
-    
+
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
 
+/** Filtra a imagem deixando bordas **/
 void separavel(Imagem *in, Imagem *out, int a, int l) {
 
     printf("Iniciando filro separável... ");
@@ -145,7 +138,7 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
     int borderx = l/2;
     float soma = 0.0f;
     Imagem *buffer = criaImagem(in->largura, in->altura, in->n_canais);
-    
+
     /** Filtro horizontal **/
     for(canal = 0; canal < in->n_canais; canal++) {
         for(y = 0; y < in->altura; y++) {
@@ -171,28 +164,30 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
             }
         }
     }
-    
+
     destroiImagem(buffer);
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
 
+/** Filtra toda a imagem, inclusive as bordas **/
 void integral(Imagem *in, Imagem *out, int a, int l) {
-    
+
     printf("Iniciando filtro integral... ");
     int y, x, canal;
     int bordery = a/2;
-    int borderx = l/2;    
+    int borderx = l/2;
     Imagem *buffer = criaImagem(in->largura, in->altura, in->n_canais);
-    
+
+    // Preenche o buffer com a soma de todos os pixels a cima e a esquerda
     for(canal = 0; canal < in->n_canais; canal += 1) {
-        
-        for(y = 0; y < in->altura; y += 1) {            
+        // Soma todos os pixels da esquerda da imagem original
+        for(y = 0; y < in->altura; y += 1) {
             buffer->dados[canal][y][0] = in->dados[canal][y][0];
             for(x = 1; x < in->largura; x += 1) {
                 buffer->dados[canal][y][x] = in->dados[canal][y][x] + buffer->dados[canal][y][x - 1];
             }
         }
-        
+        // Soma todos os pixels de cima da imagem original
         for(y = 1; y < in->altura; y += 1) {
             for(x = 0; x < in->largura; x += 1) {
                 buffer->dados[canal][y][x] = buffer->dados[canal][y][x] + buffer->dados[canal][y - 1][x];
@@ -200,17 +195,17 @@ void integral(Imagem *in, Imagem *out, int a, int l) {
         }
     }
 
-    //Borrar a imagem
     int j, i, area, aux;
     float soma;
 
+    // Borra a imagem de saida
     for(canal = 0; canal < in->n_canais; canal += 1) {
         for(y = 0; y < in->altura; y += 1) {
             for(x = 0; x < in->largura; x += 1) {
-                
+                // Reinicializa as variaveis para as proximas iterações
                 area = 0;
                 soma = 0.0f;
-
+                // Percorre a janela e atribui a soma o maior valor (soma) do buffer
                 for(j = y - bordery; j <= y + bordery; j += 1) {
                     if(j > -1 && j < in->altura) {
                         for(i = x - borderx; i <= x + borderx; i += 1) {
@@ -218,11 +213,21 @@ void integral(Imagem *in, Imagem *out, int a, int l) {
                                 area += 1;
                                 if(buffer->dados[canal][j][i] > soma)
                                     soma = buffer->dados[canal][j][i];
-                            }                               
+                            }
                         }
                     }
-                }                                
+                }
 
+                /** Depois de obter a soma total da janela, é necessário subtrair
+                os valores de cima, da esquerda e somar com o valor da diagonal
+                esquerda superior, para obter o valor "borrado" do pixel:
+                        + x x -
+                        x x x x
+                        x x x x
+                        - x x +
+                **/
+
+                // Subtrai os valores de cima
                 if(y > bordery) {
                     aux = x + borderx;
                     while(aux >= in->largura)
@@ -231,18 +236,20 @@ void integral(Imagem *in, Imagem *out, int a, int l) {
                     soma -= buffer->dados[canal][y - bordery - 1][aux];
                 }
 
+                // Subtrai os valores da esquerda
                 if(x > borderx) {
                     aux = y + bordery;
                     while(aux >= in->altura)
                         aux -= 1;
-                
-                    soma -= buffer->dados[canal][aux][x - borderx - 1];                                    
+
+                    soma -= buffer->dados[canal][aux][x - borderx - 1];
                 }
 
+                // Soma os valores da diagonal esquerda superior
                 if(y > bordery && x > borderx)
                     soma += buffer->dados[canal][y - bordery - 1][x - borderx - 1];
-                
 
+                // Divide a soma pela área da janela e atribui o valor para a imagem de saida
                 out->dados[canal][y][x] = soma / area;
             }
         }
@@ -251,66 +258,3 @@ void integral(Imagem *in, Imagem *out, int a, int l) {
     destroiImagem(buffer);
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
-
-void integralOld(Imagem *in, Imagem *out, int a, int l) {
-    
-    printf("Iniciando filtro integral... ");
-    int y, x, canal;
-    int bordery = a/2;
-    int borderx = l/2;
-    int area = a * l;
-    Imagem *buffer = criaImagem(in->largura, in->altura, in->n_canais);
-    
-    for(canal = 0; canal < in->n_canais; canal += 1) {
-        
-        for(y = 0; y < in->altura; y += 1) {            
-            buffer->dados[canal][y][0] = in->dados[canal][y][0];
-            for(x = 1; x < in->largura; x += 1) {
-                buffer->dados[canal][y][x] = in->dados[canal][y][x] + buffer->dados[canal][y][x - 1];
-            }
-        }
-        
-        for(y = 1; y < in->altura; y += 1) {
-            for(x = 0; x < in->largura; x += 1) {
-                buffer->dados[canal][y][x] = buffer->dados[canal][y][x] + buffer->dados[canal][y - 1][x];
-            }
-        }
-    }
-
-    //Borrar a imagem
-    for(canal = 0; canal < in->n_canais; canal += 1) {
-        //Primeiro elemento
-        out->dados[canal][bordery][borderx] = buffer->dados[canal][a - 1][l - 1] / area;
-
-        //Faz toda a primeira linha, fora o primeiro pixel
-        for(x = borderx + 1; x < in->largura - borderx; x += 1) {
-            out->dados[canal][bordery][x] = (buffer->dados[canal][a - 1][x + borderx] 
-                                - buffer->dados[canal][a - 1][x - borderx - 1]) / area;        
-        }
-
-        //Faz toda a primeira coluna, fora o primeiro pixel
-        for(y = bordery + 1; y < in->altura - bordery; y += 1) {
-            out->dados[canal][y][borderx] = (buffer->dados[canal][y + bordery][l - 1] 
-                                - buffer->dados[canal][y - bordery - 1][l - 1]) / area;
-        }
-
-        //Faz o resto da imagem
-        for(y = bordery + 1; y < in->altura - bordery; y += 1) {
-            for(x = borderx + 1; x < in->largura - borderx; x += 1) {
-                out->dados[canal][y][x] = (buffer->dados[canal][y + bordery][x + borderx]
-                                + buffer->dados[canal][y - bordery - 1][x - borderx - 1]
-                                - buffer->dados[canal][y + bordery][x - borderx - 1]
-                                - buffer->dados[canal][y - bordery - 1][x + borderx]) / area;
-            }
-        }
-    }
-
-    destroiImagem(buffer);
-    printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
-}
-
-
-
-
-
-
