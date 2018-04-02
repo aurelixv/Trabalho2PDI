@@ -3,12 +3,12 @@
 #include <time.h>
 #include "pdi.h"
 
-#define IMAGEM      "Exemplos/b01 - Original.bmp"
+#define IMAGEM      "Exemplos/a01 - Original.bmp"
 #define INGENUO     "ingenuo.bmp"
 #define SEPARAVEL   "separavel.bmp"
 #define INTEGRAL    "integral.bmp"
-#define JARGURA     11
-#define JALTURA     15
+#define JARGURA     3
+#define JALTURA     13
 
 void ingenuo(Imagem *in, Imagem *out, int a, int l);
 void separavel(Imagem *in, Imagem *out, int a, int l);
@@ -39,7 +39,7 @@ int main() {
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
     
     //Funções que borram a imagem
-    //TODO: Algoritmo ingênuo
+    //Algoritmo ingênuo
     ingenuo(imagem, borrada, JALTURA, JARGURA);
 
     //Faz a borda
@@ -53,7 +53,7 @@ int main() {
     //Reescreve imagem de saída para o próximo algoritmo
     copiaConteudo(imagem, borrada);
     
-    //TODO: Filtro separável
+    //Filtro separável
     separavel(imagem, borrada, JALTURA, JARGURA);
 
     //Faz a borda
@@ -67,22 +67,10 @@ int main() {
     //Reescreve imagem de saída para o próximo algoritmo
     copiaConteudo(imagem, borrada);
     
-    //TODO: Algoritmo com imagens integrais
+    //Algoritmo integral
     integral(imagem, borrada, JALTURA, JARGURA);
 
-    /*
-    int j = 3, i = 3;
-    do {    
-        integral(imagem, borrada, j, i);
-        if(j < JALTURA)
-            j += 2;
-        if(i < JARGURA)
-            i += 2;
-    } while(j < JALTURA || i < JARGURA);
-
-    fazBorda(borrada, 3, 3);
-    */
-
+    //Grava o resultado
     printf("Salvando imagem borrada com o nome [ %s ]... ", INTEGRAL);
     salvaImagem(borrada, INTEGRAL);
     printf("\t\t[\x1b[32m OK \x1b[0m]\n");
@@ -97,6 +85,7 @@ int main() {
     return 0;
 }
 
+//Função para fazer uma borda preta nos pixels que não foram borrados (ingenuo e separável)
 void fazBorda(Imagem *in, int a, int l) {
 
     int x, y, canal;
@@ -111,6 +100,7 @@ void fazBorda(Imagem *in, int a, int l) {
     }
 }
 
+//Função para realizar o filtro da média ingênuo, com a janela deslizante
 void ingenuo(Imagem *in, Imagem *out, int a, int l) {
     
     printf("Iniciando algoritmo ingenuo... ");
@@ -137,6 +127,7 @@ void ingenuo(Imagem *in, Imagem *out, int a, int l) {
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
 
+//Função para realizar o filtro da média separável
 void separavel(Imagem *in, Imagem *out, int a, int l) {
 
     printf("Iniciando filro separável... ");
@@ -176,6 +167,7 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
 
+//Função para o filtro integral
 void integral(Imagem *in, Imagem *out, int a, int l) {
     
     printf("Iniciando filtro integral... ");
@@ -184,6 +176,7 @@ void integral(Imagem *in, Imagem *out, int a, int l) {
     int borderx = l/2;    
     Imagem *buffer = criaImagem(in->largura, in->altura, in->n_canais);
     
+    //Faz as somas, esquerda e cima, em todos os pixels
     for(canal = 0; canal < in->n_canais; canal += 1) {
         
         for(y = 0; y < in->altura; y += 1) {            
@@ -252,6 +245,7 @@ void integral(Imagem *in, Imagem *out, int a, int l) {
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
 
+/*
 void integralOld(Imagem *in, Imagem *out, int a, int l) {
     
     printf("Iniciando filtro integral... ");
@@ -308,9 +302,4 @@ void integralOld(Imagem *in, Imagem *out, int a, int l) {
     destroiImagem(buffer);
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
-
-
-
-
-
-
+*/
