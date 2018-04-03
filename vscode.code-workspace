@@ -4,5 +4,9 @@
 			"path": "arquivos"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"stdio.h": "c"
+		}
+	}
 }

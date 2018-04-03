@@ -39,11 +39,11 @@ int main() {
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 
     //Funções que borram a imagem
-    //TODO: Algoritmo ingênuo
+    //Algoritmo ingênuo
     ingenuo(imagem, borrada, JALTURA, JARGURA);
 
     //Faz a borda
-    fazBorda(borrada, JALTURA, JARGURA);
+    fazBorda(borrada, JALTURA, JARGURA);    
 
     //Grava o resultado
     printf("Salvando imagem borrada com o nome [ %s ]... ", INGENUO);
@@ -53,7 +53,7 @@ int main() {
     //Reescreve imagem de saída para o próximo algoritmo
     copiaConteudo(imagem, borrada);
 
-    //TODO: Filtro separável
+    //Filtro separável
     separavel(imagem, borrada, JALTURA, JARGURA);
 
     //Faz a borda
@@ -67,9 +67,10 @@ int main() {
     //Reescreve imagem de saída para o próximo algoritmo
     copiaConteudo(imagem, borrada);
 
-    //TODO: Algoritmo com imagens integrais
+    //Algoritmo integral
     integral(imagem, borrada, JALTURA, JARGURA);
 
+    //Grava o resultado
     printf("Salvando imagem borrada com o nome [ %s ]... ", INTEGRAL);
     salvaImagem(borrada, INTEGRAL);
     printf("\t\t[\x1b[32m OK \x1b[0m]\n");
@@ -89,7 +90,7 @@ void fazBorda(Imagem *in, int a, int l) {
 
     int x, y, canal;
 
-    // Preenche todas as bordas com o valor 0.0f
+    // Preenche todos os pixels das bordas com o valor 0.0f
     for(canal = 0; canal < in->n_canais; canal += 1) {
         for(y = 0; y < in->altura; y += 1) {
             for(x = 0; x < in->largura; x += 1) {
@@ -100,7 +101,7 @@ void fazBorda(Imagem *in, int a, int l) {
     }
 }
 
-/** Filtra a imagem deixando bordas **/
+/** Filtra a imagem esquecendo das bordas **/
 void ingenuo(Imagem *in, Imagem *out, int a, int l) {
 
     printf("Iniciando algoritmo ingenuo... ");
@@ -129,7 +130,7 @@ void ingenuo(Imagem *in, Imagem *out, int a, int l) {
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
 
-/** Filtra a imagem deixando bordas **/
+/** Filtra a imagem esquecendo das bordas **/
 void separavel(Imagem *in, Imagem *out, int a, int l) {
 
     printf("Iniciando filro separável... ");
@@ -169,7 +170,7 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
 
-/** Filtra toda a imagem, inclusive as bordas **/
+/** Filtra toda a imagem, inclusive as bordas, com janelas menores **/
 void integral(Imagem *in, Imagem *out, int a, int l) {
 
     printf("Iniciando filtro integral... ");
@@ -193,63 +194,66 @@ void integral(Imagem *in, Imagem *out, int a, int l) {
                 buffer->dados[canal][y][x] = buffer->dados[canal][y][x] + buffer->dados[canal][y - 1][x];
             }
         }
-    }
 
-    int j, i, area, aux;
-    float soma;
+        //Borra a imagem
+        int top, bottom, left, right, area;
+        float soma;
 
-    // Borra a imagem de saida
-    for(canal = 0; canal < in->n_canais; canal += 1) {
+
         for(y = 0; y < in->altura; y += 1) {
             for(x = 0; x < in->largura; x += 1) {
-                // Reinicializa as variaveis para as proximas iterações
-                area = 0;
+                
                 soma = 0.0f;
-                // Percorre a janela e atribui a soma o maior valor (soma) do buffer
-                for(j = y - bordery; j <= y + bordery; j += 1) {
-                    if(j > -1 && j < in->altura) {
-                        for(i = x - borderx; i <= x + borderx; i += 1) {
-                            if(i > -1 && i < in->largura) {
-                                area += 1;
-                                if(buffer->dados[canal][j][i] > soma)
-                                    soma = buffer->dados[canal][j][i];
-                            }
-                        }
-                    }
-                }
+
+                //Valor mínimo de y da "janela", que representa o topo
+                top = y - bordery;
+                if(top < 0)
+                    top = 0;
+                
+                //Valor máximo de y da "janela", que representa o chão
+                bottom = y + bordery;
+                if(bottom >= in->altura)
+                    bottom = in->altura - 1;
+
+                //Valor mínimo de x da "janela", que representa o lado esquerdo
+                left = x - borderx;
+                if(left < 0)
+                    left = 0;
+                
+                //Valor máximo de x da "janela", que representa o lado direito
+                right = x + borderx;
+                if(right >= in->largura)
+                    right = in->largura - 1;
 
                 /** Depois de obter a soma total da janela, é necessário subtrair
-                os valores de cima, da esquerda e somar com o valor da diagonal
-                esquerda superior, para obter o valor "borrado" do pixel:
-                        + x x -
-                        x x x x
-                        x x x x
-                        - x x +
+                    os valores de cima, da esquerda e somar com o valor da diagonal
+                    esquerda superior, para obter o valor "borrado" do pixel:
+
+                    +     -
+                      x x x
+                      x x x
+                    - x x +     
+
                 **/
+                
+                //Valor que representa a maior soma da janela
+                soma += buffer->dados[canal][bottom][right];
 
-                // Subtrai os valores de cima
-                if(y > bordery) {
-                    aux = x + borderx;
-                    while(aux >= in->largura)
-                        aux -= 1;
+                //Subtrai o valor superior (linha(s)), se extrapolar o tamanho da "janela"
+                if(top - 1 >= 0)
+                    soma -= buffer->dados[canal][top - 1][right];
 
-                    soma -= buffer->dados[canal][y - bordery - 1][aux];
-                }
+                //Subtrai o valor esquerdo (coluna(s)), se extrapolar o tamanho da "janela"
+                if(left - 1 >= 0)
+                    soma -= buffer->dados[canal][bottom][left - 1];
 
-                // Subtrai os valores da esquerda
-                if(x > borderx) {
-                    aux = y + bordery;
-                    while(aux >= in->altura)
-                        aux -= 1;
+                //Caso tenha subtraido o valor superior e esquerdo, soma novamente o que foi descontado duas vezes
+                if(top - 1 >= 0 && left - 1 >= 0)
+                    soma += buffer->dados[canal][top - 1][left - 1];
 
-                    soma -= buffer->dados[canal][aux][x - borderx - 1];
-                }
 
-                // Soma os valores da diagonal esquerda superior
-                if(y > bordery && x > borderx)
-                    soma += buffer->dados[canal][y - bordery - 1][x - borderx - 1];
-
-                // Divide a soma pela área da janela e atribui o valor para a imagem de saida
+                //Calcula a área da "janela" que está dentro da imagem
+                area = (bottom - top + 1) * (right - left + 1);
                 out->dados[canal][y][x] = soma / area;
             }
         }
