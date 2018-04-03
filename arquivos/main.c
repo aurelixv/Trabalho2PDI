@@ -39,7 +39,7 @@ int main() {
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 
     //Funções que borram a imagem
-    //TODO: Algoritmo ingênuo
+    //Algoritmo ingênuo
     ingenuo(imagem, borrada, JALTURA, JARGURA);
 
     //Faz a borda
@@ -53,7 +53,7 @@ int main() {
     //Reescreve imagem de saída para o próximo algoritmo
     copiaConteudo(imagem, borrada);
 
-    //TODO: Filtro separável
+    //Filtro separável
     separavel(imagem, borrada, JALTURA, JARGURA);
 
     //Faz a borda
@@ -67,9 +67,10 @@ int main() {
     //Reescreve imagem de saída para o próximo algoritmo
     copiaConteudo(imagem, borrada);
 
-    //TODO: Algoritmo com imagens integrais
+    //Algoritmo integral
     integral(imagem, borrada, JALTURA, JARGURA);
 
+    //Grava o resultado
     printf("Salvando imagem borrada com o nome [ %s ]... ", INTEGRAL);
     salvaImagem(borrada, INTEGRAL);
     printf("\t\t[\x1b[32m OK \x1b[0m]\n");
@@ -89,7 +90,7 @@ void fazBorda(Imagem *in, int a, int l) {
 
     int x, y, canal;
 
-    // Preenche todas as bordas com o valor 0.0f
+    // Preenche todos os pixels das bordas com o valor 0.0f
     for(canal = 0; canal < in->n_canais; canal += 1) {
         for(y = 0; y < in->altura; y += 1) {
             for(x = 0; x < in->largura; x += 1) {
@@ -100,7 +101,7 @@ void fazBorda(Imagem *in, int a, int l) {
     }
 }
 
-/** Filtra a imagem deixando bordas **/
+/** Filtra a imagem esquecendo das bordas **/
 void ingenuo(Imagem *in, Imagem *out, int a, int l) {
 
     printf("Iniciando algoritmo ingenuo... ");
@@ -129,7 +130,7 @@ void ingenuo(Imagem *in, Imagem *out, int a, int l) {
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
 
-/** Filtra a imagem deixando bordas **/
+/** Filtra a imagem esquecendo das bordas **/
 void separavel(Imagem *in, Imagem *out, int a, int l) {
 
     printf("Iniciando filro separável... ");
@@ -169,7 +170,7 @@ void separavel(Imagem *in, Imagem *out, int a, int l) {
     printf("\t\t\t\t\t[\x1b[32m OK \x1b[0m]\n");
 }
 
-/** Filtra toda a imagem, inclusive as bordas **/
+/** Filtra toda a imagem, inclusive as bordas, com janelas menores **/
 void integral(Imagem *in, Imagem *out, int a, int l) {
 
     printf("Iniciando filtro integral... ");
@@ -194,6 +195,7 @@ void integral(Imagem *in, Imagem *out, int a, int l) {
             }
         }
 
+        //Borra a imagem
         int top, bottom, left, right, area;
         float soma;
 
