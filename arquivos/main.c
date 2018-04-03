@@ -199,38 +199,60 @@ void integral(Imagem *in, Imagem *out, int a, int l) {
         int top, bottom, left, right, area;
         float soma;
 
+
         for(y = 0; y < in->altura; y += 1) {
             for(x = 0; x < in->largura; x += 1) {
                 
                 soma = 0.0f;
 
+                //Valor mínimo de y da "janela", que representa o topo
                 top = y - bordery;
                 if(top < 0)
                     top = 0;
-
+                
+                //Valor máximo de y da "janela", que representa o chão
                 bottom = y + bordery;
                 if(bottom >= in->altura)
                     bottom = in->altura - 1;
 
+                //Valor mínimo de x da "janela", que representa o lado esquerdo
                 left = x - borderx;
                 if(left < 0)
                     left = 0;
-
+                
+                //Valor máximo de x da "janela", que representa o lado direito
                 right = x + borderx;
                 if(right >= in->largura)
                     right = in->largura - 1;
 
+                /** Depois de obter a soma total da janela, é necessário subtrair
+                    os valores de cima, da esquerda e somar com o valor da diagonal
+                    esquerda superior, para obter o valor "borrado" do pixel:
+
+                    +     -
+                      x x x
+                      x x x
+                    - x x +     
+
+                **/
+                
+                //Valor que representa a maior soma da janela
                 soma += buffer->dados[canal][bottom][right];
 
-                if(right < in->largura && top - 1 >= 0)
+                //Subtrai o valor superior (linha(s)), se extrapolar o tamanho da "janela"
+                if(top - 1 >= 0)
                     soma -= buffer->dados[canal][top - 1][right];
 
-                if(left - 1 >= 0 && bottom < in->altura)
+                //Subtrai o valor esquerdo (coluna(s)), se extrapolar o tamanho da "janela"
+                if(left - 1 >= 0)
                     soma -= buffer->dados[canal][bottom][left - 1];
 
+                //Caso tenha subtraido o valor superior e esquerdo, soma novamente o que foi descontado duas vezes
                 if(top - 1 >= 0 && left - 1 >= 0)
                     soma += buffer->dados[canal][top - 1][left - 1];
 
+
+                //Calcula a área da "janela" que está dentro da imagem
                 area = (bottom - top + 1) * (right - left + 1);
                 out->dados[canal][y][x] = soma / area;
             }
