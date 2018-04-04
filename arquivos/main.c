@@ -43,7 +43,7 @@ int main() {
     ingenuo(imagem, borrada, JALTURA, JARGURA);
 
     //Faz a borda
-    fazBorda(borrada, JALTURA, JARGURA);    
+    fazBorda(borrada, JALTURA, JARGURA);
 
     //Grava o resultado
     printf("Salvando imagem borrada com o nome [ %s ]... ", INGENUO);
@@ -199,17 +199,17 @@ void integral(Imagem *in, Imagem *out, int a, int l) {
         int top, bottom, left, right, area;
         float soma;
 
-
+        // Percorre todo o buffer, calcula o valor de todos pixels "borrados" e os atribui para a imagem de saída
         for(y = 0; y < in->altura; y += 1) {
             for(x = 0; x < in->largura; x += 1) {
-                
+                //Reinicializa a soma para as proximas iterações
                 soma = 0.0f;
 
                 //Valor mínimo de y da "janela", que representa o topo
                 top = y - bordery;
                 if(top < 0)
                     top = 0;
-                
+
                 //Valor máximo de y da "janela", que representa o chão
                 bottom = y + bordery;
                 if(bottom >= in->altura)
@@ -219,7 +219,7 @@ void integral(Imagem *in, Imagem *out, int a, int l) {
                 left = x - borderx;
                 if(left < 0)
                     left = 0;
-                
+
                 //Valor máximo de x da "janela", que representa o lado direito
                 right = x + borderx;
                 if(right >= in->largura)
@@ -232,10 +232,10 @@ void integral(Imagem *in, Imagem *out, int a, int l) {
                     +     -
                       x x x
                       x x x
-                    - x x +     
+                    - x x +
 
                 **/
-                
+
                 //Valor que representa a maior soma da janela
                 soma += buffer->dados[canal][bottom][right];
 
